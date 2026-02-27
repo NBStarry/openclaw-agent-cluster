@@ -1,0 +1,119 @@
+{
+  "agents": {
+    "codex": {
+      "name": "Codex",
+      "model": "gpt-5.3-codex",
+      "provider": "openai",
+      "description": "主力Agent - 后端逻辑、复杂bug、多文件重构",
+      "strengths": [
+        "后端逻辑",
+        "复杂bug调试",
+        "多文件重构",
+        "跨代码库推理",
+        "边界情况处理"
+      ],
+      "usage_percentage": 90,
+      "cost_per_million_tokens": {
+        "input": 5.0,
+        "output": 15.0
+      },
+      "recommended_for": [
+        "backend",
+        "api",
+        "database",
+        "complex-logic",
+        "refactoring",
+        "bug-fix"
+      ]
+    },
+    "claude": {
+      "name": "Claude Code",
+      "model": "claude-opus-4-5",
+      "provider": "anthropic",
+      "description": "速度型Agent - 前端工作、git操作",
+      "strengths": [
+        "前端开发",
+        "React/Vue组件",
+        "CSS/样式",
+        "git操作",
+        "快速迭代"
+      ],
+      "usage_percentage": 8,
+      "cost_per_million_tokens": {
+        "input": 15.0,
+        "output": 75.0
+      },
+      "recommended_for": [
+        "frontend",
+        "ui",
+        "components",
+        "styling",
+        "git-operations",
+        "quick-fixes"
+      ]
+    },
+    "gemini": {
+      "name": "Gemini",
+      "model": "gemini-2.0-flash-exp",
+      "provider": "google",
+      "description": "设计师Agent - UI设计和规范",
+      "strengths": [
+        "UI设计审美",
+        "HTML/CSS规范",
+        "设计系统",
+        "可访问性",
+        "视觉设计"
+      ],
+      "usage_percentage": 2,
+      "cost_per_million_tokens": {
+        "input": 0.0,
+        "output": 0.0
+      },
+      "recommended_for": [
+        "ui-design",
+        "design-spec",
+        "visual-design",
+        "dashboard",
+        "landing-page"
+      ],
+      "workflow": "Gemini设计 → Claude Code实现"
+    }
+  },
+  "selection_strategy": {
+    "description": "根据任务类型自动选择Agent",
+    "rules": [
+      {
+        "pattern": ["backend", "api", "database", "auth", "security"],
+        "agent": "codex",
+        "reason": "后端逻辑需要深度推理"
+      },
+      {
+        "pattern": ["bug", "error", "crash", "exception", "memory-leak"],
+        "agent": "codex",
+        "reason": "复杂bug调试是Codex的强项"
+      },
+      {
+        "pattern": ["frontend", "ui", "component", "react", "vue", "style"],
+        "agent": "claude",
+        "reason": "前端工作Claude Code更快"
+      },
+      {
+        "pattern": ["design", "dashboard", "landing", "visual", "layout"],
+        "agent": "gemini",
+        "reason": "UI设计先由Gemini生成规范"
+      },
+      {
+        "pattern": ["refactor", "migrate", "multi-file", "architecture"],
+        "agent": "codex",
+        "reason": "大规模重构需要跨文件推理"
+      },
+      {
+        "pattern": ["docs", "changelog", "readme", "comment"],
+        "agent": "claude",
+        "reason": "文档工作Claude处理更快"
+      }
+    ],
+    "default": "codex",
+    "fallback": "如果任务类型不明确，默认使用Codex"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "task_completion_criteria": {
+    "description": "任务完成的定义（必须全部满足）",
+    "required_checks": [
+      {
+        "name": "PR已创建",
+        "check": "gh pr list --json number,title | grep <branch>"
+      },
+      {
+        "name": "分支已同步到main（无冲突）",
+        "check": "git fetch origin main && git merge-base --is-ancestor origin/main HEAD"
+      },
+      {
+        "name": "CI通过",
+        "checks": [
+          "Lint检查",
+          "TypeScript类型检查",
+          "单元测试",
+          "E2E测试"
+        ]
+      },
+      {
+        "name": "AI Code Review通过",
+        "reviewers": [
+          "Codex reviewer（最靠谱）",
+          "Gemini reviewer（免费好用）",
+          "Claude Code reviewer（可选，过度谨慎）"
+        ]
+      },
+      {
+        "name": "UI改动包含截图",
+        "condition": "如果PR包含UI文件改动",
+        "check": "PR描述中必须有截图"
+      }
+    ]
+  },
+  "retry_policy": {
+    "max_retries": 3,
+    "retry_delay_minutes": 10,
+    "retry_strategy": "dynamic_prompt",
+    "description": "失败后不重复执行，而是分析失败原因并调整prompt"
+  },
+  "monitoring": {
+    "interval_minutes": 10,
+    "checks": [
+      {
+        "name": "tmux会话存活",
+        "command": "tmux has-session -t <session-name>"
+      },
+      {
+        "name": "PR创建状态",
+        "command": "gh pr list --head <branch>"
+      },
+      {
+        "name": "CI状态",
+        "command": "gh pr checks <pr-number>"
+      },
+      {
+        "name": "进程卡住检测",
+        "condition": "如果tmux会话存活但超过2小时无新commit"
+      }
+    ]
+  },
+  "cleanup_policy": {
+    "when": "每天执行一次",
+    "actions": [
+      "删除已合并分支的worktree",
+      "删除孤立的tmux会话",
+      "归档已完成任务到completed-tasks.json",
+      "清理临时文件"
+    ]
+  },
+  "notification": {
+    "enabled": true,
+    "channels": [
+      "feishu",
+      "telegram"
+    ],
+    "events": {
+      "pr_ready": {
+        "condition": "所有CI通过 + 所有reviewer批准",
+        "message": "PR #{number} 准备好review: {title}"
+      },
+      "task_failed": {
+        "condition": "重试3次后仍失败",
+        "message": "任务失败: {task_name} - {failure_reason}"
+      },
+      "batch_complete": {
+        "condition": "单日完成多个PR",
+        "message": "{count}个PR准备好了。{new_features}个新功能，{bug_fixes}个bug修复。"
+      }
+    }
+  },
+  "ui_screenshot_rule": {
+    "enabled": true,
+    "description": "UI改动必须包含截图，否则CI失败",
+    "file_patterns": [
+      "**/*.tsx",
+      "**/*.jsx",
+      "**/*.vue",
+      "**/*.css",
+      "**/*.scss",
+      "**/*.styled.ts"
+    ],
+    "enforcement": "CI pipeline检查PR描述是否包含图片链接"
+  }
+}

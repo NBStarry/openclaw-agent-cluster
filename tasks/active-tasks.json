@@ -1,0 +1,20 @@
+{
+  "tasks": [],
+  "last_updated": null,
+  "metadata": {
+    "description": "活跃的Agent任务跟踪",
+    "fields": {
+      "id": "任务唯一标识（通常是分支名）",
+      "tmuxSession": "tmux会话名称",
+      "agent": "使用的Agent类型（codex/claude/gemini）",
+      "description": "任务描述",
+      "repo": "代码仓库名称",
+      "worktree": "git worktree目录名",
+      "branch": "git分支名",
+      "startedAt": "开始时间（Unix timestamp毫秒）",
+      "status": "任务状态（running/retry_pending/stuck/completed/failed）",
+      "retries": "重试次数（最多3次）",
+      "notifyOnComplete": "完成时是否通知"
+    }
+  }
+}
